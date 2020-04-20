@@ -79,8 +79,9 @@ public class SongsStorageController {
 	// /songs/search?size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
 
 	@RequestMapping(
-			// storage?size={size}&page={page}
-			path = "/songsstorage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+			path = "/songsstorage",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object>[] getAllUsingPagination(
 			@RequestParam(name = "size", required = false, defaultValue = "10") int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
@@ -88,14 +89,22 @@ public class SongsStorageController {
 			@RequestParam(name = "sortOrder", required = false, defaultValue = "asc") int order) {
 
 		int startPoint = size * page;
-		return this.storage.values().stream().skip(startPoint).limit(size).collect(Collectors.toList())
+		return this.storage
+				.values()
+				.stream()
+				.skip(startPoint)
+				.limit(size)
+				.collect(Collectors.toList())
 				.toArray((Map<String, Object>[]) new Map[0]);
 	}
 
 	// GET
 	// /songs/search?criteriaType=byName&criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
-	@RequestMapping(path = "/songsstorage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, params = {
-			"criteriaType=byName" })
+	@RequestMapping(
+			path = "/songsstorage",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			params = {"criteriaType=byName"})
 	public Map<String, Object>[] getSpecifiedNameWithPagination(
 			@RequestParam(name = "size", required = false, defaultValue = "10") int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
@@ -104,15 +113,23 @@ public class SongsStorageController {
 			@RequestParam(name = "criteriaValue", required = true) int value) {
 
 		int startPoint = size * page;
-		return this.storage.values().stream().skip(startPoint).limit(size).collect(Collectors.toList())
+		return this.storage
+				.values()
+				.stream()
+				.skip(startPoint)
+				.limit(size)
+				.collect(Collectors.toList())
 				.toArray((Map<String, Object>[]) new Map[0]);
 		// TODO: search by name.
 	}
 
 	// GET
 	// /songs/search?criteriaType=byPerformer&criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
-	@RequestMapping(path = "/songsstorage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, params = {
-			"criteriaType=byPerformer" })
+	@RequestMapping(
+			path = "/songsstorage",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			params = {"criteriaType=byPerformer"})
 	public Map<String, Object>[] getSpecifiedPerformerWithPagination(
 			@RequestParam(name = "size", required = false, defaultValue = "10") int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
@@ -121,15 +138,23 @@ public class SongsStorageController {
 			@RequestParam(name = "criteriaValue", required = true) int value) {
 
 		int startPoint = size * page;
-		return this.storage.values().stream().skip(startPoint).limit(size).collect(Collectors.toList())
+		return this.storage
+				.values()
+				.stream()
+				.skip(startPoint)
+				.limit(size)
+				.collect(Collectors.toList())
 				.toArray((Map<String, Object>[]) new Map[0]);
 		// TODO: search by Performer.
 	}
 
 	// GET
 	// /songs/search?criteriaType=byGenre&criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}
-	@RequestMapping(path = "/songsstorage/search", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, params = {
-			"criteriaType=byGenre" })
+	@RequestMapping(
+			path = "/songsstorage/search",
+			method = RequestMethod.GET,
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			params = {"criteriaType=byGenre"})
 	public Map<String, Object>[] getSpecifiedGenreWithPagination(
 			@RequestParam(name = "size", required = false, defaultValue = "10") int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
@@ -138,7 +163,12 @@ public class SongsStorageController {
 			@RequestParam(name = "criteriaValue", required = true) int value) {
 
 		int startPoint = size * page;
-		return this.storage.values().stream().skip(startPoint).limit(size).collect(Collectors.toList())
+		return this.storage
+				.values()
+				.stream()
+				.skip(startPoint)
+				.limit(size)
+				.collect(Collectors.toList())
 				.toArray((Map<String, Object>[]) new Map[0]);
 		// TODO: search by genre.
 	}
