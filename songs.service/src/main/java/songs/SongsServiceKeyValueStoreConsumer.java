@@ -13,6 +13,7 @@ public class SongsServiceKeyValueStoreConsumer implements SongsService{
 	
 	public SongsServiceKeyValueStoreConsumer() {
 		this.restTemplate = new RestTemplate();
+		  restTemplate.setErrorHandler(new ErrorHandlerRESTHelper());
 	}
 	
 	@Value("${storage.service.url}")
@@ -23,17 +24,14 @@ public class SongsServiceKeyValueStoreConsumer implements SongsService{
 	
 	@Override
 	public Song create(Song song) {
-		song.setSongId(null);
 		// consuming other service method using POST
-		KeyObjectPair keyObject = this.restTemplate
+		Song keyObject = this.restTemplate
 			.postForObject(
 					this.url, 
-					song, 
-					KeyObjectPair.class);
-		Song newObject = keyObject.getObject();
-		newObject.setSongId(keyObject.getKey());
-		updateSong(keyObject.getKey(), newObject);
-		return newObject;
+					song,
+					Song.class);
+		
+		return keyObject;
 	}
 
 	@Override
@@ -63,7 +61,49 @@ public class SongsServiceKeyValueStoreConsumer implements SongsService{
 		// consuming other service method using DELETE
 		this.restTemplate
 			.delete(this.url);
-		
 	}
+
+	@Override
+	public Object[] getAllSongs(int size, int page, String sortAttribute, String order) {
+		// TODO Auto-generated method stub
+		return this.restTemplate
+				.getForObject(
+						this.url + "/all?size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}",
+						Song[].class, 
+						size,
+						page,
+						sortAttribute,
+						order);
+	}
+
+	@Override
+	public Object[] getAllSongsByPerformer(int size, int page, String sortAttribute, String order, String value) {
+		return this.restTemplate
+				.getForObject(
+						this.url + "/performer?criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}",
+						Song[].class, 
+						value,
+						size,
+						page,
+						sortAttribute,
+						order);
+	}
+
+	@Override
+	public Object[] getAllSongsByName(int size, int page, String sortAttribute, String order, String value) {
+		return this.restTemplate
+				.getForObject(
+						this.url + "/name?criteriaValue={value}&size={size}&page={page}&sortBy={sortAttribute}&sortOrder={order}",
+						Song[].class, 
+						value,
+						size,
+						page,
+						sortAttribute,
+						order);
+	}
+	
+
+	
+	
 
 }

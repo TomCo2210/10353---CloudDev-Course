@@ -7,10 +7,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-public class SongStorageApplication {
+public class StorageApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SongStorageApplication.class, args);
+		SpringApplication.run(StorageApplication.class, args);
 	}
 
 }
