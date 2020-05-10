@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.management.RuntimeErrorException;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.common.base.Strings;
 
 @RestController
 public class CustomerController {
@@ -63,68 +66,28 @@ public class CustomerController {
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public CustomerBoundary[] getAll(
+			@RequestParam(name = "byAgeGreaterThan", required = false, defaultValue = "-1") int byAgeGreaterThan,
+			@RequestParam(name = "byLastName", required = false) String byLastName,
+			@RequestParam(name = "byCountryCode", required = false) String byCountryCode,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
 			@RequestParam(name = "size", required = false, defaultValue = "10") int size) {
+		
+		List<Customer> customersList;
+		if(byLastName != null) 
+			customersList = this.customers.getCustomersByLastName(byLastName, size, page);// List<Customer>
+		else 
+			if(byCountryCode != null) 
+				customersList = this.customers.getCustomersByCountryCode(byCountryCode, size, page);// List<Customer>
+			else 
+				if(byAgeGreaterThan != -1) 
+					customersList = this.customers.getCustomersByAgeGreaterThan(byAgeGreaterThan, page, size);// List<Customer>
+				else
+					customersList = this.customers.getAll(size, page);
 		return 
-		  this.customers
-			.getAll(size, page) // List<Customer>
+			customersList
 			.stream() // Stream<Customer>
 			.map(CustomerBoundary::new)// Stream<CustomerBoundary>
 			.collect(Collectors.toList()) // List<CustomerBoundary>
 			.toArray(new CustomerBoundary[0]); // CustomerBoundary[]
 	}
-	
-	// Read All - SELECT 
-	@RequestMapping(path = "/customers?byLastName={byLastName}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public CustomerBoundary[] getCustomersByLastName(
-			@RequestParam(name = "byLastName", required = true) String byLastName,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "10") int size) {
-		return 
-		  this.customers
-			.getCustomersByLastName(byLastName, size, page)// List<Customer>
-			.stream() // Stream<Customer>
-			.map(CustomerBoundary::new)// Stream<CustomerBoundary>
-			.collect(Collectors.toList()) // List<CustomerBoundary>
-			.toArray(new CustomerBoundary[0]); // CustomerBoundary[]
-	}
-	
-	// Read All - SELECT 
-	@RequestMapping(path = "/customers?byAgeGreaterThan={byAgeGreaterThan}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public CustomerBoundary[] getCustomersByAgeGreaterThan(
-			@RequestParam(name = "byAgeGreaterThan", required = true) int byAgeGreaterThan,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "10") int size) {
-		return 
-		  this.customers
-			.getCustomersByAgeGreaterThan(byAgeGreaterThan, page, size)// List<Customer>
-			.stream() // Stream<Customer>
-			.map(CustomerBoundary::new)// Stream<CustomerBoundary>
-			.collect(Collectors.toList()) // List<CustomerBoundary>
-			.toArray(new CustomerBoundary[0]); // CustomerBoundary[]
-	}
-	
-	// Read All - SELECT 
-	@RequestMapping(path = "/customers?byCountryCode={byCountryCode}",
-			method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public CustomerBoundary[] getCustomersByCountryCode(
-			@RequestParam(name = "byCountryCode", required = true) String byCountryCode,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(name = "size", required = false, defaultValue = "10") int size) {
-		return 
-		  this.customers
-			.getCustomersByCountryCode(byCountryCode, size, page)// List<Customer>
-			.stream() // Stream<Customer>
-			.map(CustomerBoundary::new)// Stream<CustomerBoundary>
-			.collect(Collectors.toList()) // List<CustomerBoundary>
-			.toArray(new CustomerBoundary[0]); // CustomerBoundary[]
-	}
-	
-	
-
 }
