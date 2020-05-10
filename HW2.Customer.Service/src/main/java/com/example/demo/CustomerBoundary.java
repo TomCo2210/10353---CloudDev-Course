@@ -67,7 +67,7 @@ public class CustomerBoundary {
 		
 		this.birthdate = day + "-" + month + "-" + year;
 	}
-	public Customer toEntity(){
+	public Customer toEntity() throws BadDataException{
 		Customer entity = new Customer();
 		entity.setEmail(this.email);
 		entity.setFirst(this.name.getFirst());
@@ -79,6 +79,7 @@ public class CustomerBoundary {
 		 * dateAsArray[1] = month
 		 * dateAsArray[0] = day
 		 */
+		try {
 		String [] dateAsArray =  this.birthdate.split("-");
 		if(dateAsArray.length < 3 )
 			throw new RuntimeErrorException(null, "Illegal date");
@@ -94,6 +95,9 @@ public class CustomerBoundary {
 		LocalDate date = LocalDate.parse(expectedYear+"-"+ month +"-"+day);
 		
 		entity.setBirthdate(date);
+		}catch(Exception ex) {
+			throw new BadDataException("Given date is not valid- the format is:  dd-MM-yyyy");
+		}
 		return entity;
 	}
 

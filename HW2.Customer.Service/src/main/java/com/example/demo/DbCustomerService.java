@@ -18,6 +18,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Strings;
+
 import javassist.NotFoundException;
 
 @Service
@@ -33,7 +35,19 @@ public class DbCustomerService implements CustomerService{
 	}
 	
 	@Override
-	public Customer create(Customer customer) throws RuntimeException {
+	public Customer create(Customer customer) throws NotFoundException,BadDataException {
+		if(customer == null)
+			throw new BadDataException("Customer is not valid");
+
+		if(Strings.isNullOrEmpty(customer.getEmail()))
+			throw new BadDataException("Email bust be provided");
+		
+		Optional<Customer> optional = this.customers
+				.findById(customer.getEmail()); // SELECT
+		
+		if (optional.isPresent()) 
+			throw new BadDataException("Customer already exists");
+		
 		if(customer.getCountry() == null)
 			throw new BadDataException("Customer must include country");
 		
@@ -68,19 +82,25 @@ public class DbCustomerService implements CustomerService{
 
 	@Override
 	@Transactional(readOnly = true)
-	public Customer getCustomerByEmail(String email) {
+	public Customer getCustomerByEmail(String email) throws NotFoundException,BadDataException{
+		if(Strings.isNullOrEmpty(email))
+			throw new BadDataException("Email bust be provided");
+		
 		Optional<Customer> optional = this.customers
 				.findById(email); // SELECT
 		
 		if (optional.isPresent()) {
 			return optional.get();
 		}
-		return null;
+		throw new NotFoundException("Could not find customer: " + email);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Customer> getCustomersByLastName(String lastName, int size, int page) {
+	public List<Customer> getCustomersByLastName(String lastName, int size, int page)throws NotFoundException,BadDataException {
+		if(lastName == null)
+			throw new BadDataException("Provided last name is empty");
+		
 		return this.customers
 				.findAllByLast(lastName, PageRequest.of(page, size, Direction.ASC, "email", "email"));
 				 // SELECT
@@ -88,15 +108,18 @@ public class DbCustomerService implements CustomerService{
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Customer> getCustomersByCountryCode(String countryCode, int size, int page) {
+	public List<Customer> getCustomersByCountryCode(String countryCode, int size, int page)throws NotFoundException,BadDataException {
+		if(countryCode == null)
+			throw new BadDataException("Provided country code is empty");
+		
 		return this.customers
-				.findAllByLast(countryCode, PageRequest.of(page, size, Direction.ASC, "email", "email"));
+				.findAllByCountryCountryCode(countryCode, PageRequest.of(page, size, Direction.ASC, "email", "email"));
 				 // SELECT
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Customer> getCustomersByAgeGreaterThan(int age, int page, int size) {		
+	public List<Customer> getCustomersByAgeGreaterThan(int age, int page, int size) throws NotFoundException,BadDataException{		
 		String expectedYear = Year.now().getValue() - age + "";
 		
 		String month = YearMonth.now().getMonthValue() + "";
@@ -113,12 +136,19 @@ public class DbCustomerService implements CustomerService{
 
 	@Override
 	@Transactional
-	public Customer update(String emailToUpdate, Customer update) throws RuntimeException {
+	public Customer update(String emailToUpdate, Customer update)throws NotFoundException,BadDataException{
 		if(emailToUpdate == null)
 			throw new BadDataException("Provided email is empty");
-		Customer rv = this.getCustomerByEmail(emailToUpdate);
+		
+		Customer rv;
+		try {
+			rv = this.getCustomerByEmail(emailToUpdate);
+		} catch (NotFoundException e) {
+			throw new NotFoundException(e.getMessage());
+		}
+		
 		if(rv == null)
-			throw new NotFoundExcetion("Could not find customer: " + emailToUpdate);
+			throw new NotFoundException("Could not find customer: " + emailToUpdate);
 		
 		if (update.getBirthdate() != null) {
 			rv.setBirthdate(update.getBirthdate());
@@ -154,7 +184,7 @@ public class DbCustomerService implements CustomerService{
 
 	@Override
 	@Transactional
-	public void updateCountry(String courtryCode, Country update) throws NotFoundException{
+	public void updateCountry(String courtryCode, Country update)throws NotFoundException,BadDataException{
 		Optional<Country> Optionalcountry = countries.findById(courtryCode);
 		 if(!Optionalcountry.isPresent())
 			throw new NotFoundException("Could not find country: " + courtryCode);
