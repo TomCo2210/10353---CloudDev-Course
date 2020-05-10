@@ -1,5 +1,6 @@
 package com.example.demo;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.MonthDay;
@@ -75,9 +76,9 @@ public class DbCustomerService implements CustomerService{
 		String expectedYear = Year.now().getValue() - age + "";
 		String month = YearMonth.now().getMonthValue() + "";
 		String day = MonthDay.now().getDayOfMonth() + "";
-		Date date = Date.valueOf(""+expectedYear+"-"+month+"-"+day+"");
+		LocalDate date = LocalDate.parse(expectedYear+"-"+ (Integer.parseInt(month)<10? "0" + month :month) +"-"+day);
 		return this.customers
-				.findAllByBirthdateLessThan(date, PageRequest.of(page, size, Direction.ASC, "email", "email"));
+				.findByBirthdateBefore(date, PageRequest.of(page, size, Direction.ASC, "email", "email"));
 		
 	}
 

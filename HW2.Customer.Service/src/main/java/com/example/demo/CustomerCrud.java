@@ -2,6 +2,7 @@ package com.example.demo;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,7 @@ public interface CustomerCrud extends PagingAndSortingRepository<Customer, Strin
 			@Param("countryCode") String countryCode, 
 			Pageable pageable);
 	
-	public List<Customer> findAllByBirthdateLessThan(
-			@Param("birthdate") Date birthdate, 
+	public List<Customer> findByBirthdateBefore(
+			@Param("birthdate") LocalDate birthdate, 
 			Pageable pageable);
 }
