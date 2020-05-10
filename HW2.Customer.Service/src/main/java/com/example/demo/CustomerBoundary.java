@@ -3,6 +3,9 @@ package com.example.demo;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.MonthDay;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.Date;
 
 import javax.management.RuntimeErrorException;
@@ -52,11 +55,17 @@ public class CustomerBoundary {
 	public CustomerBoundary(Customer entity) {
 		if(entity == null)
 			return;
+		
 		this.country = entity.getCountry();
 		this.email = entity.getEmail();
-		this.name = new Name(entity.getFirst(),entity.getLast());		
-		LocalDate date = entity.getBirthdate();
-		this.birthdate = date.getDayOfMonth() + "-" + date.getMonthValue() + "-" + date.getYear();
+		this.name = new Name(entity.getFirst(),entity.getLast());	
+		
+		LocalDate date = entity.getBirthdate();	
+		int year = date.getYear();
+		String month = date.getMonthValue()<10? "0" + date.getMonthValue() : date.getMonthValue() + "";
+		String day = date.getDayOfMonth()<10? "0" + date.getDayOfMonth() : date.getDayOfMonth() + "";
+		
+		this.birthdate = day + "-" + month + "-" + year;
 	}
 	public Customer toEntity(){
 		Customer entity = new Customer();
@@ -64,10 +73,25 @@ public class CustomerBoundary {
 		entity.setFirst(this.name.getFirst());
 		entity.setLast(this.name.getLast());
 		entity.setCountry(this.country);
+		
+		/*
+		 * dateAsArray[2] = expectedYear
+		 * dateAsArray[1] = month
+		 * dateAsArray[0] = day
+		 */
 		String [] dateAsArray =  this.birthdate.split("-");
 		if(dateAsArray.length < 3 )
 			throw new RuntimeErrorException(null, "Illegal date");
-		LocalDate date = LocalDate.parse(Integer.parseInt(dateAsArray[2]) + "-" + Integer.parseInt(dateAsArray[1]) + "-" + Integer.parseInt(dateAsArray[0]));
+		
+		String expectedYear = dateAsArray[2];
+
+		String month = dateAsArray[1];
+		month = (Integer.parseInt(month)<10? "0" + month :month);
+		
+		String day = dateAsArray[0];
+		day = (Integer.parseInt(day)<10? "0" + day :day);
+			
+		LocalDate date = LocalDate.parse(expectedYear+"-"+ month +"-"+day);
 		
 		entity.setBirthdate(date);
 		return entity;

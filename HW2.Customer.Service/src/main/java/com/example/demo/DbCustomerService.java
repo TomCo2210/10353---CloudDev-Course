@@ -72,11 +72,16 @@ public class DbCustomerService implements CustomerService{
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Customer> getCustomersByAgeGreaterThan(int age, int page, int size) {
+	public List<Customer> getCustomersByAgeGreaterThan(int age, int page, int size) {		
 		String expectedYear = Year.now().getValue() - age + "";
+		
 		String month = YearMonth.now().getMonthValue() + "";
+		month = (Integer.parseInt(month)<10? "0" + month :month);
+		
 		String day = MonthDay.now().getDayOfMonth() + "";
-		LocalDate date = LocalDate.parse(expectedYear+"-"+ (Integer.parseInt(month)<10? "0" + month :month) +"-"+day);
+		day = (Integer.parseInt(day)<10? "0" + day :day);
+		
+		LocalDate date = LocalDate.parse(expectedYear+"-"+ month +"-"+day);
 		return this.customers
 				.findByBirthdateBefore(date, PageRequest.of(page, size, Direction.ASC, "email", "email"));
 		
@@ -97,7 +102,14 @@ public class DbCustomerService implements CustomerService{
 		}
 		
 		if(update.getCountry() != null) {
-			rv.setCountry(update.getCountry());
+			Optional<Country> Optionalcountry = countries.findById(update.getCountry().getCountryCode());
+			Country country;
+			if(Optionalcountry.isPresent())//update
+				country = Optionalcountry.get();
+			else //create
+				country = new Country(update.getCountry().getCountryCode()
+												,update.getCountry().getCountryName());
+			rv.setCountry(countries.save(country));
 		}
 		return this.customers
 			.save(rv); // SELECT INSERT / **UPDATE**
