@@ -10,11 +10,15 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javassist.NotFoundException;
 
 @Service
 public class DbCustomerService implements CustomerService{
@@ -29,7 +33,27 @@ public class DbCustomerService implements CustomerService{
 	}
 	
 	@Override
-	public Customer create(Customer customer) {
+	public Customer create(Customer customer) throws RuntimeException {
+		if(customer.getCountry() == null)
+			throw new BadDataException("Customer must include country");
+		
+		if(customer.getCountry().getCountryCode() == null)
+			throw new BadDataException("Country must include country code");
+		
+		Optional<Country> Optionalcountry = countries.findById(customer.getCountry().getCountryCode());
+		Country country;
+		
+		if(Optionalcountry.isPresent())//update
+			country = Optionalcountry.get();
+		else { //create		
+			if(customer.getCountry().getCountryName() == null)
+				throw new BadDataException("Country must include country name");
+
+			country = new Country(customer.getCountry().getCountryCode()
+											,customer.getCountry().getCountryName());		
+		}
+		
+		customer.setCountry(countries.save(country));	
 		countries.save(customer.getCountry());
 		return this.customers
 			.save(customer); // INSERT / SELECT + UPDATE = UPSERT
@@ -89,8 +113,13 @@ public class DbCustomerService implements CustomerService{
 
 	@Override
 	@Transactional
-	public Customer update(String emailToUpdate, Customer update) {
+	public Customer update(String emailToUpdate, Customer update) throws RuntimeException {
+		if(emailToUpdate == null)
+			throw new BadDataException("Provided email is empty");
 		Customer rv = this.getCustomerByEmail(emailToUpdate);
+		if(rv == null)
+			throw new NotFoundExcetion("Could not find customer: " + emailToUpdate);
+		
 		if (update.getBirthdate() != null) {
 			rv.setBirthdate(update.getBirthdate());
 		}
@@ -101,16 +130,17 @@ public class DbCustomerService implements CustomerService{
 			rv.setLast(update.getLast());
 		}
 		
-		if(update.getCountry() != null) {
-			Optional<Country> Optionalcountry = countries.findById(update.getCountry().getCountryCode());
-			Country country;
-			if(Optionalcountry.isPresent())//update
-				country = Optionalcountry.get();
-			else //create
-				country = new Country(update.getCountry().getCountryCode()
-												,update.getCountry().getCountryName());
-			rv.setCountry(countries.save(country));
-		}
+		if(update.getCountry() != null) 
+			if(update.getCountry().getCountryCode() != null && update.getCountry().getCountryName() != null) {
+				Optional<Country> Optionalcountry = countries.findById(update.getCountry().getCountryCode());
+				Country country;
+				if(Optionalcountry.isPresent())//update
+					country = Optionalcountry.get();
+				else //create
+					country = new Country(update.getCountry().getCountryCode()
+													,update.getCountry().getCountryName());
+				rv.setCountry(countries.save(country));
+			}
 		return this.customers
 			.save(rv); // SELECT INSERT / **UPDATE**
 	}
@@ -120,6 +150,18 @@ public class DbCustomerService implements CustomerService{
 	public void deleteAll() {
 		 customers.deleteAll(); // DELETE;
 		 countries.deleteAll(); // DELETE
+	}
+
+	@Override
+	@Transactional
+	public void updateCountry(String courtryCode, Country update) throws NotFoundException{
+		Optional<Country> Optionalcountry = countries.findById(courtryCode);
+		 if(!Optionalcountry.isPresent())
+			throw new NotFoundException("Could not find country: " + courtryCode);
+		
+		Country country = Optionalcountry.get();
+		country.setCountryName(update.getCountryName());
+		countries.save(country);	
 	}
 
 }

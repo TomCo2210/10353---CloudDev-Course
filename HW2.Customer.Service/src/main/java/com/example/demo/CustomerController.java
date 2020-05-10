@@ -53,6 +53,13 @@ public class CustomerController {
 			this.customers.update(emailToUpdate, customer.toEntity());
 	}
 	
+	@RequestMapping(path = "/countries/{courtryCode}"
+			, method = RequestMethod.PUT
+			, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void updateCountry(@PathVariable("courtryCode") String courtryCode, @RequestBody Country country) {
+			this.customers.updateCountry(courtryCode, country);
+	}
+	
 	// Delete - DELETE
 		@RequestMapping(path = "/customers",
 				method = RequestMethod.DELETE)

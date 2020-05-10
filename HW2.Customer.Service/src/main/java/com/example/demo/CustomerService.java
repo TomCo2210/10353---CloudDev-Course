@@ -1,6 +1,8 @@
 package com.example.demo;
 import java.util.List;
 
+import javassist.NotFoundException;
+
 //implement a higher level REST API layer
 //implement this interface using DAL - Data Access Layer
 public interface  CustomerService {
@@ -23,8 +25,11 @@ public interface  CustomerService {
 		public List<Customer> getCustomersByAgeGreaterThan(int age, int page, int size); 
 		
 		// Update - UPDATE
-		public Customer update (String emailToUpdate, Customer update);
+		public Customer update (String emailToUpdate, Customer update)throws NotFoundException;
 		
 		// Delete - DELETE
 		public void deleteAll ();
+		
+		// Update - UPDATE
+		public void updateCountry(String courtryCode, Country country) throws NotFoundException;
 }
