@@ -1,10 +1,5 @@
 package com.example.demo;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-
 public class Name {
 	private String first;
 	private String last;
