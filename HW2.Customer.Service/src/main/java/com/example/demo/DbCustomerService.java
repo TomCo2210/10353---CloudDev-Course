@@ -41,7 +41,7 @@ public class DbCustomerService implements CustomerService{
 				.findById(customer.getEmail()); // SELECT
 		
 		if (optional.isPresent()) 
-			throw new BadDataException("Customer already exists");
+			throw new AlreadyExistsException("Customer E-mail already Exists!");
 		
 		if(customer.getCountry() == null)
 			throw new BadDataException("Customer must include country");
