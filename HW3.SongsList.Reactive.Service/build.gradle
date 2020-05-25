@@ -26,6 +26,7 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:3.0.0-SNAPSHOT'
     implementation 'io.springfox:springfox-spring-webflux:3.0.0-SNAPSHOT'
 	
+	runtimeOnly 'com.h2database:h2'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
