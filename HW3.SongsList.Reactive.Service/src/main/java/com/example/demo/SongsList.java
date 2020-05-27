@@ -71,5 +71,13 @@ public class SongsList {
 	public void setListContent(Map<String, String> listContent) {
 		this.listContent = listContent;
 	}
-
+	
+	public SongsListDTO toDTO(SongsList entity) {
+		SongsListDTO dto = new SongsListDTO();
+		dto.setId(entity.getId());
+		dto.setName(entity.getName());
+		dto.setUserEmail(entity.getUserEmail());
+		dto.setCreatedTimestamp(entity.getCreatedTimestamp());
+		return dto;
+	}
 }
