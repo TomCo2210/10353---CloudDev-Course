@@ -11,7 +11,7 @@ public interface SongsListsService {
 
 	public Mono<Void> updateSongToListById(String listId, SongsList songsList);
 
-	public Mono<Void> addSongToListById(String listId, SongsList songsList);
+	public Mono<Void> addSongToListById(String listId, Song song);
 
 	public Mono<Void> deleteSongByIdFromListById(String listId, String songId);
 

@@ -1,18 +1,21 @@
 package com.example.demo;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SongsListDTO {
 	private String id;
 	private String name;
 	private String userEmail;
-	private Date createdTimestamp;
+	private String createdTimestamp;
 	
 	public SongsListDTO() {
 		
 	}
 	
-	public SongsListDTO(String id, String name, String userEmail, Date createdTimestamp) {
+	public SongsListDTO(String id, String name, String userEmail, String createdTimestamp) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -37,19 +40,22 @@ public class SongsListDTO {
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
-	public Date getCreatedTimestamp() {
+	public String getCreatedTimestamp() {
 		return createdTimestamp;
 	}
-	public void setCreatedTimestamp(Date createdTimestamp) {
+	public void setCreatedTimestamp(String createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
 	}
 	
-	public SongsList toEntity(SongsListDTO dto) {
+	public SongsList toEntity(SongsListDTO dto) throws ParseException {
 		SongsList entity = new SongsList();
 		entity.setId(dto.getId());
 		entity.setName(dto.getName());
 		entity.setUserEmail(dto.getUserEmail());
-		entity.setCreatedTimestamp(dto.getCreatedTimestamp());
+			
+	    Date date=new SimpleDateFormat(GlobalVariables.DATE_FORMAT).parse(this.createdTimestamp);    
+		entity.setCreatedTimestamp(date);
+		
 		return entity;
 	}
 }

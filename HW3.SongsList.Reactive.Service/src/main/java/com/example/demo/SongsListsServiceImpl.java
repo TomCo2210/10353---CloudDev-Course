@@ -1,15 +1,17 @@
 package com.example.demo;
 
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ch.qos.logback.core.util.Duration;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 public class SongsListsServiceImpl implements SongsListsService {
-
-	public static final String EMAIL_PATTERN = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 	private SongsListsServiceCrud songsLists;
 	
 	@Autowired
@@ -31,30 +33,47 @@ public class SongsListsServiceImpl implements SongsListsService {
 	@Override
 	public Mono<Void> updateSongToListById(String listId, SongsList songsList) {
 		return this.songsLists
-				.findById(listId) // Mono<Dummy>
+				.findById(listId) // Mono<SongLists>
 				.flatMap(oldSongsLists->{
 					oldSongsLists.setData(songsList);
 					return this.songsLists.save(oldSongsLists);
-				})// Mono<Dummy>
+				})// Mono<SongLists>
 				.flatMap(d->Mono.empty());// Mono<Void>
 		}
 
 	@Override
-	public Mono<Void> addSongToListById(String listId, SongsList songsList) {
-		// TODO addSongToListById in SongsListsServiceImpl
-		return null;
+	public Mono<Void> addSongToListById(String listId, Song song) {
+		return this.songsLists
+				.findById(listId) // Mono<SongLists>
+				.flatMap(oldSongsLists->{
+					oldSongsLists.addSongList(song);
+					return this.songsLists.save(oldSongsLists);
+				})// Mono<SongLists>
+				.flatMap(d->Mono.empty());// Mono<Void>
 	}
 
 	@Override
 	public Mono<Void> deleteSongByIdFromListById(String listId, String songId) {
-		// TODO deleteSongByIdFromListById in SongsListsServiceImpl
-		return null;
+		return this.songsLists
+				.findById(listId) // Mono<SongLists>
+				.flatMap(oldSongsLists->{
+					oldSongsLists.removeSongById(songId);
+					return this.songsLists.save(oldSongsLists);
+				})// Mono<SongLists>
+				.flatMap(d->Mono.empty());// Mono<Void>
 	}
-
+	private List<Song> songs;
 	@Override
-	public Flux<Song> getAllSongsFromSongsListById(String listId, String sortAttr, String orderAttr) {
-		// TODO getAllSongsFromSongsListById in SongsListsServiceImpl
-		return null;
+	public Flux<Song> getAllSongsFromSongsListById(String listId, String sortAttr, String orderAttr) {			
+			Mono<SongsList> listsong = this.songsLists
+					.findById(listId);
+
+			listsong.subscribe(v -> songs = v.getListContent());
+			//TODO sort by sortAttr orderAttr
+			//this.songsLists.findAllBycustomer_email(email, Sort.by(sortBy));
+
+			return Flux.fromIterable(songs);			
+		
 	}
 
 	@Override
