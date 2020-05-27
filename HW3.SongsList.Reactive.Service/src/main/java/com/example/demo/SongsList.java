@@ -2,23 +2,28 @@ package com.example.demo;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "SongsLists")
 public class SongsList {
 
 	private String id;
 	private String name;
 	private String userEmail;
 	private Date createdTimestamp;
-	private Map<String, String> listContent;
+	private List<Song> listContent;
 
 	public SongsList() {
-		listContent = new HashMap<String, String>();
+		listContent = new ArrayList<Song>();
 	}
 
-	public SongsList(String name, String userEmail, Map<String, String> listContent) {
+	public SongsList(String name, String userEmail, List<Song> listContent) {
 		this.name = name;
 		this.userEmail = userEmail;
 		Date date = new Date(System.currentTimeMillis()); // this object contains the current date value
@@ -31,7 +36,7 @@ public class SongsList {
 		}
 		this.listContent = listContent;
 	}
-
+	@Id
 	public String getId() {
 		return id;
 	}
@@ -64,11 +69,11 @@ public class SongsList {
 		this.createdTimestamp = createdTimestamp;
 	}
 
-	public Map<String, String> getListContent() {
+	public List<Song> getListContent() {
 		return listContent;
 	}
 
-	public void setListContent(Map<String, String> listContent) {
+	public void setListContent(List<Song> listContent) {
 		this.listContent = listContent;
 	}
 	
@@ -79,5 +84,10 @@ public class SongsList {
 		dto.setUserEmail(entity.getUserEmail());
 		dto.setCreatedTimestamp(entity.getCreatedTimestamp());
 		return dto;
+	}
+
+	public void setData(SongsList songsList) {
+		// TODO Auto-generated method stub
+		
 	}
 }

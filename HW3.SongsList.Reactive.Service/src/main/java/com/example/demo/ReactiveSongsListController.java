@@ -37,6 +37,7 @@ public class ReactiveSongsListController {
 	public Mono<SongsList> create(
 			@RequestBody SongsList songsList) {
 		// TODO: create #1
+		this.songsLists.create(songsList);
 		return Mono.empty();
 	}
 

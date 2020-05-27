@@ -1,29 +1,43 @@
 package com.example.demo;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Service
 public class SongsListsServiceImpl implements SongsListsService {
 
 	public static final String EMAIL_PATTERN = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+	private SongsListsServiceCrud songsLists;
+	
+	@Autowired
+	public SongsListsServiceImpl(SongsListsServiceCrud songsLists) {
+		super();
+		this.songsLists = songsLists;
+	}
 
 	@Override
 	public Mono<SongsList> create(SongsList songsList) {
-		// TODO create in SongsListsServiceImpl
-		return null;
+		return this.songsLists.save(songsList);
 	}
 
 	@Override
 	public Mono<SongsList> getSongsListById(String listId) {
-		// TODO getSongsListById in SongsListsServiceImpl
-		return null;
+		return this.songsLists.findById(listId);
 	}
 
 	@Override
 	public Mono<Void> updateSongToListById(String listId, SongsList songsList) {
-		// TODO updateSongToListById in SongsListsServiceImpl
-		return null;
-	}
+		return this.songsLists
+				.findById(listId) // Mono<Dummy>
+				.flatMap(oldSongsLists->{
+					oldSongsLists.setData(songsList);
+					return this.songsLists.save(oldSongsLists);
+				})// Mono<Dummy>
+				.flatMap(d->Mono.empty());// Mono<Void>
+		}
 
 	@Override
 	public Mono<Void> addSongToListById(String listId, SongsList songsList) {
