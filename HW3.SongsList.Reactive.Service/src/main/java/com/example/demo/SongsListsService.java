@@ -9,7 +9,7 @@ public interface SongsListsService {
 
 	public Mono<SongsList> getSongsListById(String listId);
 
-	public Mono<Void> updateSongToListById(String listId, SongsList songsList);
+	public Mono<Void> updateSongsListById(String listId, SongsList songsList);
 
 	public Mono<Void> addSongToListById(String listId, Song song);
 
@@ -25,8 +25,8 @@ public interface SongsListsService {
 
 	public Mono<Void> deleteAllSongsLists();
 
-	public Mono<Void> markSongsInSongsListByIdAsDeleted(String listId);
+	public Mono<Void> markSongsListByIdAsDeleted(String listId);
 
-	public Mono<Void> unMarkSongsInSongsListByIdAsDeleted(String listId);
+	public Mono<Void> unMarkSongsListByIdAsDeleted(String listId);
 
 }

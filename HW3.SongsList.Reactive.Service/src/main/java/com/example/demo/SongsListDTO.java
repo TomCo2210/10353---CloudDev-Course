@@ -3,6 +3,7 @@ package com.example.demo;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
 public class SongsListDTO {
@@ -10,11 +11,11 @@ public class SongsListDTO {
 	private String name;
 	private String userEmail;
 	private String createdTimestamp;
-	
+
 	public SongsListDTO() {
-		
+
 	}
-	
+
 	public SongsListDTO(String id, String name, String userEmail, String createdTimestamp) {
 		super();
 		this.id = id;
@@ -22,40 +23,55 @@ public class SongsListDTO {
 		this.userEmail = userEmail;
 		this.createdTimestamp = createdTimestamp;
 	}
+	
+	
+	public SongsListDTO(SongsList songsList) {
+		super();
+		this.id = songsList.getId();
+		this.name = songsList.getName();
+		this.userEmail = songsList.getUserEmail();
+		this.createdTimestamp = songsList.getCreatedTimestamp().toString();
+	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getUserEmail() {
 		return userEmail;
 	}
+
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
+
 	public String getCreatedTimestamp() {
 		return createdTimestamp;
 	}
+
 	public void setCreatedTimestamp(String createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
 	}
-	
-	public SongsList toEntity(SongsListDTO dto) throws ParseException {
+
+	public SongsList toEntity() {
 		SongsList entity = new SongsList();
-		entity.setId(dto.getId());
-		entity.setName(dto.getName());
-		entity.setUserEmail(dto.getUserEmail());
-			
-	    Date date=new SimpleDateFormat(GlobalVariables.DATE_FORMAT).parse(this.createdTimestamp);    
-		entity.setCreatedTimestamp(date);
-		
+		entity.setId(this.getId());
+		entity.setName(this.getName());
+		entity.setUserEmail(this.getUserEmail());
+		entity.setCreatedTimestamp(Instant.now());
+
 		return entity;
 	}
 }
