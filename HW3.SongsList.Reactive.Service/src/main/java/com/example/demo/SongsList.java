@@ -97,6 +97,8 @@ public class SongsList {
 				throw new BadDataException("Invalid Email");
 			this.userEmail = songsList.userEmail.trim();
 		}
+		if(songsList.deleted)
+			this.deleted = songsList.deleted;
 	}
 
 	public void addSongList(Song song) {

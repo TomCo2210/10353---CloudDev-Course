@@ -83,17 +83,12 @@ public class SongsListsServiceImpl implements SongsListsService {
 
 	@Override
 	public Flux<Song> getAllSongsFromSongsListById(String listId, String sortAttr, String orderAttr) {
-		Mono<SongsList> songList = this.songsListsServiceCrud.findByIdAndDeleted(listId,false); // Mono<SongLists>
-		return songList
-		.flatMap(songList->{
-			if(songList != null) {
-				return this.songsServiceCrud.findAllByListId(listId, Sort.by(orderAttr.equals("DESC")?Direction.DESC:Direction.ASC, sortAttr))
-						.flatMap(song -> {				
-							return songsServiceCrud.findById(song.getId());
-						});
-			}
-		});
-		
+		return this.songsListsServiceCrud.findByIdAndDeleted(listId,false)
+				.flatMapMany(songList->{
+					if(songList == null)
+						return Flux.empty();
+					return this.songsServiceCrud.findAllBySongListId(listId, Sort.by(orderAttr.equals("DESC")?Direction.DESC:Direction.ASC, sortAttr));
+				});
 	}
 
 	@Override
@@ -103,14 +98,18 @@ public class SongsListsServiceImpl implements SongsListsService {
 
 	@Override
 	public Flux<SongsList> getAllSongsListsByUser(String userEmail, String sortAttr, String orderAttr) {
-		// TODO getAllSongsListsByUser in SongsListsServiceImpl
-		return null;
+		return songsListsServiceCrud.findAllByUserEmail(userEmail,Sort.by(orderAttr.equals("DESC")?Direction.DESC:Direction.ASC, sortAttr))
+				.filter(L->!L.isDeleted());
+
 	}
 
 	@Override
 	public Flux<SongsList> getAllSongsListsContainsSongById(String songId, String sortAttr, String orderAttr) {
-		// TODO getAllSongsListsContainsSongById in SongsListsServiceImpl
-		return null;
+		return this.songsServiceCrud.findBySongId(songId)
+				.flatMapMany(song ->{
+					Song s1 = song;
+					return this.songsListsServiceCrud.findByIdAndDeleted(song.getSongListId(),false);
+				});
 	}
 
 	@Override
@@ -129,9 +128,13 @@ public class SongsListsServiceImpl implements SongsListsService {
 				.flatMap(d -> Mono.empty());// Mono<Void>
 	}
 
-	@Override
+	/*@Override
 	public Mono<Void> unMarkSongsListByIdAsDeleted(String listId) {
-		// TODO unMarkSongsInSongsListByIdAsDeleted in SongsListsServiceImpl
-		return null;
-	}
+		return this.songsListsServiceCrud.findByIdAndDeleted(listId,false) // Mono<SongLists>
+				.flatMap(oldSongsList -> {
+					oldSongsList.setDeleted(false);
+					return this.songsListsServiceCrud.save(oldSongsList);
+				})// Mono<SongLists>
+				.flatMap(d -> Mono.empty());// Mono<Void>
+	}*/
 }

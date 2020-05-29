@@ -13,4 +13,8 @@ public interface SongsListsServiceCrud
 	Mono<SongsList> findByIdAndDeleted(String listId, boolean deleted);
 
 	Flux<SongsList> findByDeleted(boolean deleted,Sort sort);
+	
+	Flux<SongsList> findAllByUserEmail(String userEmail,Sort sort);
+	
+	Flux<SongsList> findAllBySongsSongId(String songId,Sort sort);
 }

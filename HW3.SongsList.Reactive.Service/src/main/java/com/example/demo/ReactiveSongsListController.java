@@ -94,7 +94,6 @@ public class ReactiveSongsListController {
 				.deleteSongByIdFromListById(listId,songId);	
 	}
 	
-
 	@RequestMapping(
 			path = "/lists/{listId}/songs",
 			method = RequestMethod.GET,
@@ -128,7 +127,9 @@ public class ReactiveSongsListController {
 			@RequestParam(name = "sortAttr", required = false, defaultValue = "id") String sortAttr,
 			@RequestParam(name = "orderAttr", required = false, defaultValue = "ASC") String orderAttr) {
 		// TODO: getAllSongsListsByUser #8
-		return Flux.empty();
+		return this.songsLists
+				.getAllSongsListsByUser(userEmail, sortAttr, orderAttr)
+				.map(SongsListDTO::new);
 	}
 
 	@RequestMapping(
@@ -140,7 +141,9 @@ public class ReactiveSongsListController {
 			@RequestParam(name = "sortAttr", required = false, defaultValue = "id") String sortAttr,
 			@RequestParam(name = "orderAttr", required = false, defaultValue = "ASC") String orderAttr) {
 		// TODO: getAllSongsListsContainsSongById #9
-		return Flux.empty();
+		return this.songsLists
+				.getAllSongsListsContainsSongById(songId, sortAttr, orderAttr)
+				.map(SongsListDTO::new);
 	}
 
 	@RequestMapping(
