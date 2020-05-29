@@ -1,13 +1,19 @@
 package com.example.demo;
 
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
@@ -24,9 +30,16 @@ public class ReactiveSongsListController {
 		this.songsLists = songsLists;
 	}
 
-	@RequestMapping(path = "/lists", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<SongsListDTO> create(@RequestBody SongsListDTO songsList) {
-		return this.songsLists.create(songsList.toEntity()).map(SongsListDTO::new);
+	@RequestMapping(
+			path = "/lists",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<SongsListDTO> create(
+			@RequestBody SongsListDTO songsList) {
+		return this.songsLists
+				.create(songsList.toEntity())
+				.map(SongsListDTO::new);
 	}
 
 	@RequestMapping(
@@ -35,11 +48,9 @@ public class ReactiveSongsListController {
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Mono<SongsListDTO> getSongsListById(
 			@PathVariable("listId") String listId) {
-		return Mono.empty();
-//			return this.songsLists
-//					.getSongsListById(listId)
-
-	
+			return this.songsLists
+					.getSongsListById(listId)
+					.map(SongsListDTO::new);
 	}
 
 	@RequestMapping(
@@ -49,11 +60,14 @@ public class ReactiveSongsListController {
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Mono<Void> updateSongsListById(
 			@PathVariable("listId") String listId,
-			@RequestBody SongsList songsList) {
+			@RequestBody SongsListDTO songsList) {
 		// TODO: updateSongsListById #3
 		// TODO: unMarkSongsListByIdAsDeleted #12
-		return this.songsLists.updateSongsListById(listId, songsList);
-
+		if (!songsList.isDeleted())
+			return this.songsLists
+					.updateSongsListById(listId, songsList.toEntity());
+		else
+			return Mono.empty();
 	}
 
 	@RequestMapping(
@@ -63,9 +77,10 @@ public class ReactiveSongsListController {
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Mono<Void> addSongToListById(
 			@PathVariable("listId") String listId,
-			@RequestBody SongsList songsList) {
+			@RequestBody SongDTO song) {
 		// TODO: addSongToListById #4
-		return Mono.empty();
+		return this.songsLists
+				.addSongToListById(listId,song.toEntity());	
 	}
 
 	@RequestMapping(
@@ -75,11 +90,13 @@ public class ReactiveSongsListController {
 			@PathVariable("listId") String listId,
 			@PathVariable("songId") String songId) {
 		// TODO: deleteSongByIdFromListById #5
-		return Mono.empty();
+		return this.songsLists
+				.deleteSongByIdFromListById(listId,songId);	
 	}
+	
 
 	@RequestMapping(
-			path = "/lists/{listId}/songs?sortAttr={sortAttr}&orderAttr={orderAttr}",
+			path = "/lists/{listId}/songs",
 			method = RequestMethod.GET,
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<SongDTO> getAllSongsFromSongsListById(
@@ -87,19 +104,23 @@ public class ReactiveSongsListController {
 			@RequestParam(name = "sortAttr", required = false, defaultValue = "songId") String sortAttr,
 			@RequestParam(name = "orderAttr", required = false, defaultValue = "ASC") String orderAttr) {
 		// TODO: getAllSongsFromSongsListById #6
-		return Flux.empty();
+		return this.songsLists
+				.getAllSongsFromSongsListById(listId,sortAttr,orderAttr)
+				.map(SongDTO::new);
 	}
 
-	@RequestMapping(path = "/lists?sortAttr={sortAttr}&orderAttr={orderAttr}", method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@RequestMapping(path = "/lists", method = RequestMethod.GET, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<SongsListDTO> getAllSongsLists(
 			@RequestParam(name = "sortAttr", required = false, defaultValue = "id") String sortAttr,
 			@RequestParam(name = "orderAttr", required = false, defaultValue = "ASC") String orderAttr) {
 		// TODO: getAllSongsLists #7
-		return Flux.empty();
+		return this.songsLists
+				.getAllSongsLists(sortAttr,orderAttr)
+				.map(SongsListDTO::new);
 	}
 
 	@RequestMapping(
-			path = "/lists/byUser/{userEmail}?sortAttr={sortAttr}&orderAttr={orderAttr}",
+			path = "/lists/byUser/{userEmail}",
 			method = RequestMethod.GET,
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<SongsListDTO> getAllSongsListsByUser(
@@ -111,7 +132,7 @@ public class ReactiveSongsListController {
 	}
 
 	@RequestMapping(
-			path = "/lists/bySongId/{songId}?sortAttr={sortAttr}&orderAttr={orderAttr}",
+			path = "/lists/bySongId/{songId}",
 			method = RequestMethod.GET,
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<SongsListDTO> getAllSongsListsContainsSongById(
@@ -127,7 +148,8 @@ public class ReactiveSongsListController {
 			method = RequestMethod.DELETE)
 	public Mono<Void> deleteAllSongsLists() {
 		// TODO: deleteAllSongsLists #10
-		return Mono.empty();
+		return this.songsLists
+				.deleteAllSongsLists();
 	}
 
 	@RequestMapping(
@@ -136,36 +158,32 @@ public class ReactiveSongsListController {
 	public Mono<Void> markSongsInSongsListByIdAsDeleted(
 			@PathVariable(name = "listId") String listId) {
 		// TODO: markSongsListByIdAsDeleted #11
-		return Mono.empty();
+		return this.songsLists
+				.markSongsListByIdAsDeleted(listId);
 	}
 
-//	//MARK: exception handlers
-//	@ExceptionHandler
-//	@ResponseStatus(code = HttpStatus.NOT_FOUND)
-//	// Error code 404
-//	public Map<String, Object> handleException(NotFoundException e) {
-//		return Collections.singletonMap("Error", (e.getMessage() != null) ? e.getMessage() : "Not found");
-//	}
-//
-//	@ExceptionHandler
-//	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-//	// Error code 500
-//	public Map<String, Object> handleException(AlreadyExistsException e) {
-//		return Collections.singletonMap("Error", (e.getMessage() != null) ? e.getMessage() : "Already Exists");
-//	}
-//
-//	@ExceptionHandler
-//	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-//	// Error code 400
-//	public Map<String, Object> handleException(BadDataException e) {
-//		return Collections.singletonMap("Error", (e.getMessage() != null) ? e.getMessage() : "Bad data");
-//	}
-//
-//	@ExceptionHandler
-//	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-//	// Error code 400
-//	public Map<String, Object> handleException(IllegalInputException e) {
-//		return Collections.singletonMap("Error", (e.getMessage() != null) ? e.getMessage() : "Illegal Input");
-//	}
+	//MARK: exception handlers
+	@ExceptionHandler
+	@ResponseStatus(code = HttpStatus.NOT_FOUND)
+	// Error code 404
+	public Map<String, Object> handleException(NotFoundException e) {
+		return Collections.singletonMap("Error", (e.getMessage() != null) ? e.getMessage() : "Not found");
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+	// Error code 500
+	public Map<String, Object> handleException(AlreadyExistsException e) {
+		return Collections.singletonMap("Error", (e.getMessage() != null) ? e.getMessage() : "Already Exists");
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	// Error code 400
+	public Map<String, Object> handleException(BadDataException e) {
+		return Collections.singletonMap("Error", (e.getMessage() != null) ? e.getMessage() : "Bad data");
+	}
+
+	
 //	
 }

@@ -20,20 +20,20 @@ public class SongsList {
 	private String userEmail;
 	private Instant createdTimestamp;
 	@DBRef
-	private List<Song> listContent;
+	private List<Song> songs;
 	//SONGSLISTID#SONGID
-	private boolean deletionState;
+	private boolean deleted;
 
 	public SongsList() {
-		listContent = new ArrayList<Song>();
+		songs = new ArrayList<Song>();
 	}
 
 	public SongsList(String name, String userEmail, List<Song> listContent) {
 		this.name = name;
 		this.userEmail = userEmail;
 		this.createdTimestamp = Instant.now();
-		this.listContent = listContent;
-		this.deletionState = false;
+		this.songs = listContent;
+		this.deleted = false;
 	}
 
 	public String getId() {
@@ -68,12 +68,14 @@ public class SongsList {
 		this.createdTimestamp = createdTimestamp;
 	}
 
-	public List<Song> getListContent() {
-		return listContent;
+
+
+	public List<Song> getSongs() {
+		return songs;
 	}
 
-	public void setListContent(List<Song> listContent) {
-		this.listContent = listContent;
+	public void setSongs(List<Song> songs) {
+		this.songs = songs;
 	}
 
 	public SongsListDTO toDTO(SongsList entity) {
@@ -87,41 +89,42 @@ public class SongsList {
 	}
 
 	public void setData(SongsList songsList) {
-		if (songsList.name != null && songsList.name.trim().isEmpty())
+		if (songsList.name != null && !songsList.name.trim().isEmpty())
 			this.name = songsList.name;
 
 		if (songsList.userEmail != null) {
 			if (!Pattern.matches(GlobalVariables.EMAIL_PATTERN, songsList.userEmail.trim()))
-				this.userEmail = songsList.userEmail.trim();
-		}
-
-		if (songsList.createdTimestamp != null) {
-
-			this.createdTimestamp = songsList.createdTimestamp;
+				throw new BadDataException("Invalid Email");
+			this.userEmail = songsList.userEmail.trim();
 		}
 	}
 
 	public void addSongList(Song song) {
-		if (listContent == null)
-			listContent = new ArrayList<Song>();
-		listContent.add(song);
+		if (songs == null)
+			songs = new ArrayList<Song>();
+		if(song == null)
+			throw new BadDataException("Invalid SongId");
+		if(song.getSongId().trim().isEmpty())
+			throw new BadDataException("Invalid SongId");
+		songs.add(song);
 	}
 
 	public void removeSongById(String songId) {
-		if (listContent == null)
+		if (songs == null)
 			return;
-		for (int i = 0; i < listContent.size(); i++)
-			if (listContent.get(i).getSongId() == songId) {
-				listContent.remove(i);
+		for (int i = 0; i < songs.size(); i++)
+			if (songs.get(i).getSongId() == songId) {
+				songs.remove(i);
 				return;
 			}
 	}
 
-	public boolean getDeletionState() {
-		return this.deletionState;
+	public boolean isDeleted() {
+		return deleted;
 	}
 
-	public void setDeletionState(boolean deletionState) {
-		this.deletionState = deletionState;
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
+
 }

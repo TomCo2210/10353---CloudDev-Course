@@ -2,22 +2,26 @@ package com.example.demo;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class SongsListDTO {
 	private String id;
 	private String name;
 	private String userEmail;
 	private String createdTimestamp;
-
+	@JsonIgnore
+	private boolean deleted;
 	public SongsListDTO() {
 
 	}
 
-	public SongsListDTO(String id, String name, String userEmail, String createdTimestamp) {
+	public SongsListDTO(String id, String name, String userEmail, String createdTimestamp, boolean deleted) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.userEmail = userEmail;
 		this.createdTimestamp = createdTimestamp;
+		this.deleted = deleted;
 	}
 	
 	
@@ -27,6 +31,7 @@ public class SongsListDTO {
 		this.name = songsList.getName();
 		this.userEmail = songsList.getUserEmail();
 		this.createdTimestamp = songsList.getCreatedTimestamp().toString();
+		this.deleted = songsList.isDeleted();
 	}
 
 	public String getId() {
@@ -59,6 +64,14 @@ public class SongsListDTO {
 
 	public void setCreatedTimestamp(String createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	public SongsList toEntity() {

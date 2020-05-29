@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "Songs")
 public class Song {
 	@Id
+	private String id;
+	
 	private String songId;
 
 	public Song() {
@@ -15,12 +17,24 @@ public class Song {
 		this.songId = songId;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getSongId() {
 		return songId;
 	}
 
 	public void setSongId(String songId) {
 		this.songId = songId;
+	}
+	
+	public SongDTO toDTO() {
+		return new SongDTO(songId);
 	}
 
 	@Override
