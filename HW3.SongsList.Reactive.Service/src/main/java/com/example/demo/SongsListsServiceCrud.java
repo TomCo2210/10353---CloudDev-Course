@@ -13,7 +13,4 @@ public interface SongsListsServiceCrud
 	Mono<SongsList> findByIdAndDeleted(String listId, boolean deleted);
 
 	Flux<SongsList> findByDeleted(boolean deleted,Sort sort);
-	
-	@Query(fields="{Songs : 1}")
-	Flux<Song> findSongsByIdAndDeleted(String listId,boolean deleted,Sort sort);
 }

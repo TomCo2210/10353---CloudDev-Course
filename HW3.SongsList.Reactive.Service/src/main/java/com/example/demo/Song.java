@@ -9,6 +9,8 @@ public class Song {
 	private String id;
 	
 	private String songId;
+	
+	private String songListId;
 
 	public Song() {
 	}
@@ -33,6 +35,14 @@ public class Song {
 		this.songId = songId;
 	}
 	
+	public String getSongListId() {
+		return songListId;
+	}
+
+	public void setSongListId(String songListId) {
+		this.songListId = songListId;
+	}
+
 	public SongDTO toDTO() {
 		return new SongDTO(songId);
 	}

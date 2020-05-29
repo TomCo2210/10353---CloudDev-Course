@@ -59,6 +59,7 @@ public class SongsListsServiceImpl implements SongsListsService {
 
 	@Override
 	public Mono<Void> addSongToListById(String listId, Song song) {
+		song.setSongListId(listId);
 		return this.songsServiceCrud.save(song)
 				.flatMap(newSong->{
 					return this.songsListsServiceCrud.findByIdAndDeleted(listId,false)
@@ -80,35 +81,19 @@ public class SongsListsServiceImpl implements SongsListsService {
 				.flatMap(d -> Mono.empty());// Mono<Void>
 	}
 
-	private List<Song> songs;
-
 	@Override
 	public Flux<Song> getAllSongsFromSongsListById(String listId, String sortAttr, String orderAttr) {
-		return this.songsListsServiceCrud.findByIdAndDeleted(listId,false, Sort.by(orderAttr.equals("DESC")?Direction.DESC:Direction.ASC, sortAttr))
-				
-				;
-		/*if(songList == null)
-			return Flux.empty();
-		songList.subscribe(v -> songs = v.getListContent());*/
-
-		// TODO sort by sortAttr orderAttr
-		// this.songsLists.findAllBycustomer_email(email, Sort.by(sortBy));
-		//Flux.fromIterable (Arrays.asList(students)).sort( (obj1, obj2) -> obj1.getName().compareTo(obj2.getName()));
-
-		/*return Flux.fromIterable(songs).sort(new Comparator<Song>() {
-			@Override
-			public int compare(Song first, Song second) {
-				switch (sortAttr) {
-				case "songId":
-					if(orderAttr == "ASC")
-						return first.getSongId().compareTo(second.getSongId());
-					return second.getSongId().compareTo(first.getSongId()); 
-				default:
-					return 1;
-				}
+		Mono<SongsList> songList = this.songsListsServiceCrud.findByIdAndDeleted(listId,false); // Mono<SongLists>
+		return songList
+		.flatMap(songList->{
+			if(songList != null) {
+				return this.songsServiceCrud.findAllByListId(listId, Sort.by(orderAttr.equals("DESC")?Direction.DESC:Direction.ASC, sortAttr))
+						.flatMap(song -> {				
+							return songsServiceCrud.findById(song.getId());
+						});
 			}
-		});*/
-
+		});
+		
 	}
 
 	@Override
