@@ -111,14 +111,16 @@ public class SongsList {
 		songs.add(song);
 	}
 
-	public void removeSongById(String songId) {
+	public Song removeSongById(String songId) {
 		if (songs == null)
-			return;
+			return null;
 		for (int i = 0; i < songs.size(); i++)
-			if (songs.get(i).getSongId() == songId) {
+			if (songs.get(i).getSongId().equals(songId)) {
+				Song song = songs.get(i);
 				songs.remove(i);
-				return;
+				return song;
 			}
+		return null;
 	}
 
 	public boolean isDeleted() {

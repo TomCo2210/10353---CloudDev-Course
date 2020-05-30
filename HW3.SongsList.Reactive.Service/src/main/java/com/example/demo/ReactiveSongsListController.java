@@ -63,11 +63,8 @@ public class ReactiveSongsListController {
 			@RequestBody SongsListDTO songsList) {
 		// TODO: updateSongsListById #3
 		// TODO: unMarkSongsListByIdAsDeleted #12
-		if (!songsList.isDeleted())
-			return this.songsLists
-					.updateSongsListById(listId, songsList.toEntity());
-		else
-			return Mono.empty();
+		return this.songsLists
+				.updateSongsListById(listId, songsList.toEntity());
 	}
 
 	@RequestMapping(
