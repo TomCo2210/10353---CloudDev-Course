@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+
+
+
+
+{% block title %} Home {% endblock %}
+
+
+
+
+
+{% block content %}
+
+<form action="/insert" method="POST">
+
+
+
+ <div class="form-group">
+
+
+ <button class="btn btn-primary">Insert</button>
+
+
+ </div>
+
+
+ </form>
+
+<form action="/getList" method="GET">
+
+
+
+ <div class="form-group">
+
+
+ <button class="btn btn-primary">get</button>
+
+
+ </div>
+
+
+ </form>
+<div class="container">
+
+
+ <div class="row">
+
+
+ <div class="col-md-6 col-md-offset-3">
+
+
+Home page
+
+
+{% if session['name'] %}
+
+
+
+
+
+  {% if session['client'] %}
+     <br>
+     <br>
+  name: {{ session['name'] }}
+  <br>
+  email :{{ session['email'] }}
+   <br>
+  followers :{{ session['followers'] }}
+     <br>
+  id :{{ session['id'] }}
+  <br>
+  data recieved from :{{ session['location'] }}
+     <br>
+  time :{{ session['time'] }}
+  {% endif %}
+
+
+{% else %}
+
+
+No profile
+
+
+
+{% endif %}
+
+
+ </div>
+
+
+ </div>
+
+
+</div>
+
+
+{% endblock %}
