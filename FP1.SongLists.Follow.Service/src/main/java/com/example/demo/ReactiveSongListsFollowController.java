@@ -28,27 +28,27 @@ public class ReactiveSongListsFollowController {
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<Void> addSongsListToCustomerByCustomerEmail(
-			@RequestBody SongsListDTO songsList,
+			@RequestBody SongsList songsList,
 			@PathVariable("customerEmail") String customerEmail) {
 		return  this.songListsFollowService
-				.addSongsListToCustomerByCustomerEmail(customerEmail,songsList.toEntity());	
+				.addSongsListToCustomerByCustomerEmail(customerEmail,songsList);	
 	}
 	
 	@RequestMapping(
 			path = "/follow/{customerEmail}/{listId}",
 			method = RequestMethod.DELETE)
-	public Mono<Void> delteListByIdFromCustomerByCustomerEmail(
+	public Mono<Void> deleteListByIdFromCustomerByCustomerEmail(
 			@PathVariable("customerEmail") String customerEmail,
 			@PathVariable("listId") String listId) {
 			return this.songListsFollowService
-					.delteListByIdFromCustomerByCustomerEmail(customerEmail,listId);
+					.deleteListByIdFromCustomerByCustomerEmail(customerEmail,listId);
 	}
 
 	@RequestMapping(
 			path = "/byListAndCustomer/{customerEmail}/{listId}",
 			method = RequestMethod.GET,
-			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Mono<CustomerAndSongsListPair> getByListAndCustomer(
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<CustomerAndSongsListPairDTO> getByListAndCustomer(
 			@PathVariable("customerEmail") String customerEmail,
 			@PathVariable("listId") String listId){
 		return this.songListsFollowService.
