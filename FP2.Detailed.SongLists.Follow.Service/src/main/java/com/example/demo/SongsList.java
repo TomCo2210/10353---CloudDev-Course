@@ -65,8 +65,6 @@ public class SongsList {
 		this.createdTimestamp = createdTimestamp;
 	}
 
-
-
 	public SongsListDTO toDTO(SongsList entity) {
 		SongsListDTO dto = new SongsListDTO();
 		dto.setId(entity.getId());
@@ -75,19 +73,6 @@ public class SongsList {
 		DateFormat dateFormat = new SimpleDateFormat(GlobalVariables.DATE_FORMAT);
 		dto.setCreatedTimestamp(dateFormat.format(entity.getCreatedTimestamp()));
 		return dto;
-	}
-
-	public void setData(SongsList songsList) {
-		if (songsList.name != null && !songsList.name.trim().isEmpty())
-			this.name = songsList.name;
-
-		if (songsList.userEmail != null) {
-			if (!Pattern.matches(GlobalVariables.EMAIL_PATTERN, songsList.userEmail.trim()))
-				throw new BadDataException("Invalid Email");
-			this.userEmail = songsList.userEmail.trim();
-		}
-		if(songsList.deleted)
-			this.deleted = songsList.deleted;
 	}
 
 	public boolean isDeleted() {
