@@ -28,10 +28,10 @@ public class ReactiveSongListsFollowController {
 			method = RequestMethod.PUT,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<Void> addSongsListToCustomerByCustomerEmail(
-			@RequestBody SongsList songsList,
+			@RequestBody SongsListDTO songsList,
 			@PathVariable("customerEmail") String customerEmail) {
-		return  this.songListsFollowService
-				.addSongsListToCustomerByCustomerEmail(customerEmail,songsList);	
+		return this.songListsFollowService
+				.addSongsListToCustomerByCustomerEmail(customerEmail, songsList.toEntity());	
 	}
 	
 	@RequestMapping(
@@ -48,7 +48,7 @@ public class ReactiveSongListsFollowController {
 			path = "/byListAndCustomer/{customerEmail}/{listId}",
 			method = RequestMethod.GET,
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<CustomerAndSongsListPairDTO> getByListAndCustomer(
+	public Mono<CustomerAndSongsListPair> getByListAndCustomer(
 			@PathVariable("customerEmail") String customerEmail,
 			@PathVariable("listId") String listId){
 		return this.songListsFollowService.
@@ -59,24 +59,26 @@ public class ReactiveSongListsFollowController {
 			path = "/byCustomer/{customerEmail}",
 			method = RequestMethod.GET,
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<SongsList> getAllSongsListsByCustomerEmail(
+	public Flux<SongsListDTO> getAllSongsListsByCustomerEmail(
 			@PathVariable("customerEmail") String customerEmail,
-			@RequestParam(name = "sortAttr", required = false, defaultValue = "id") String sortAttr,
+			@RequestParam(name = "sortAttr", required = false, defaultValue = "songsListId") String sortAttr,
 			@RequestParam(name = "orderAttr", required = false, defaultValue = "ASC") String orderAttr){
 		return this.songListsFollowService
-				.getAllSongsListsByCustomerEmail(customerEmail, sortAttr, orderAttr);
+				.getAllSongsListsByCustomerEmail(customerEmail, sortAttr, orderAttr)
+				.map(SongsListDTO::new);
 	}
 	
 	@RequestMapping(
 			path = "/byList/{listId}",
 			method = RequestMethod.GET,
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<Customer> getAllCustomersThatFollowsSongsListByListId(
+	public Flux<CustomerDTO> getAllCustomersThatFollowsSongsListByListId(
 			@PathVariable("listId") String listId,
-			@RequestParam(name = "sortAttr", required = false, defaultValue = "id") String sortAttr,
+			@RequestParam(name = "sortAttr", required = false, defaultValue = "customerEmail") String sortAttr,
 			@RequestParam(name = "orderAttr", required = false, defaultValue = "ASC") String orderAttr){
 		return this.songListsFollowService
-				.getAllCustomersThatFollowsSongsListByListId(listId, sortAttr, orderAttr);
+				.getAllCustomersThatFollowsSongsListBySongsListId(listId, sortAttr, orderAttr)
+				.map(CustomerDTO::new);
 	}
 	
 	@RequestMapping(

@@ -7,17 +7,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Document(collection = "Customers")
 public class Customer {
 	@Id
 	private String customerEmail;
-	@JsonIgnore
-	@DBRef
 	private List<SongsList> songsLists;
 
 	public Customer() {
+		this.songsLists = new ArrayList<SongsList>();
 	}
 
 	public Customer(String customerEmail) {
@@ -45,7 +42,7 @@ public class Customer {
 		if (songsLists == null)
 			return null;
 		for (int i = 0; i < songsLists.size(); i++)
-			if (songsLists.get(i).getId().equals(listId)) {
+			if (songsLists.get(i).getSongsListId().equals(listId)) {
 				SongsList songsList = songsLists.get(i);
 				songsLists.remove(songsList);
 				return songsList;
@@ -58,7 +55,7 @@ public class Customer {
 			songsLists = new ArrayList<SongsList>();
 		if(newSongsList == null)
 			throw new BadDataException("Invalid SongsList");
-		if(newSongsList.getId().trim().isEmpty())
+		if(newSongsList.getSongsListId().trim().isEmpty())
 			throw new BadDataException("Invalid SongsListId");
 		songsLists.add(newSongsList);
 	}

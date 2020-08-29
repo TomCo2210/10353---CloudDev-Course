@@ -10,11 +10,13 @@ public class SongsList {
 	@Id
 	private String id;
 	
+	private String songsListId;
+	
 	public SongsList() { }
 	
-	public SongsList(String id) {
+	public SongsList(String songListId) {
 		super();
-		this.setId(id);
+		this.setSongsListId(songListId);
 	}
 		
 	public String getId() {
@@ -25,4 +27,35 @@ public class SongsList {
 		this.id = id;
 	}
 
+	public String getSongsListId() {
+		return songsListId;
+	}
+
+	public void setSongsListId(String songListId) {
+		this.songsListId = songListId;
+	}
+	
+	public SongsListDTO toDTO() {
+		return new SongsListDTO(songsListId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SongsList other = (SongsList) obj;
+		if (songsListId == null) {
+			if (other.songsListId != null)
+				return false;
+		} else if (!songsListId.equals(other.songsListId))
+			return false;
+		return true;
+	}
+
+	
+	
 }

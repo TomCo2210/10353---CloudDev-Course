@@ -24,18 +24,17 @@ public class ReactiveDetailedSongListsFollowController {
 			path = "/byCustomer/{customerEmail}/details",
 			method = RequestMethod.GET,
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<Void> getSongsListsDetailsByCustomer(
+	public Flux<SongsListDTO> getSongsListsDetailsByCustomer(
 			@PathVariable("customerEmail") String customerEmail) {
-		return Flux.empty();
+		return this.detailedSongListsFollowService.getSongsListsDetailsByCustomer(customerEmail);
 	}
 
 	@RequestMapping(
 			path = "/byListAndCustomer/{customerEmail}/songs",
 			method = RequestMethod.GET,
 			produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<Void> getAllSongsByCustomer(
+	public Flux<SongsListAndSongPair> getAllSongsByCustomer(
 			@PathVariable("customerEmail") String customerEmail) {
-		return Flux.empty();
+		return this.detailedSongListsFollowService.getAllSongsByCustomer(customerEmail);
 	}
-
 }

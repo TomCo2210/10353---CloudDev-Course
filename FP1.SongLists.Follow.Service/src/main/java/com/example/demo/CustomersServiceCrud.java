@@ -7,6 +7,9 @@ import reactor.core.publisher.Mono;
 
 public interface CustomersServiceCrud extends ReactiveMongoRepository<Customer, String>{
 
-	Mono<Customer> findByCustomerEmail(String customerEmail);
+	public Mono<Customer> findByCustomerEmail(String customerEmail);
+	
+	public Flux<Customer> findAllBySongsListsSongsListId (String SongsListId);
+	
 
 }
